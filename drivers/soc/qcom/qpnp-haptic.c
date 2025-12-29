@@ -1965,7 +1965,11 @@ static int qpnp_hap_auto_res_enable(struct qpnp_hap *hap, int enable)
 	if (hap->pmic_subtype == PM660_SUBTYPE)
 		rc = qpnp_hap_masked_write_reg(hap,
 				QPNP_HAP_AUTO_RES_CTRL(hap->base),
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
+				QPNP_HAP_AUTO_RES_MASK, 0);
+#else
 				QPNP_HAP_AUTO_RES_MASK, val);
+#endif
 	else
 		rc = qpnp_hap_sec_masked_write_reg(hap,
 				QPNP_HAP_TEST2_REG(hap->base),
@@ -2157,6 +2161,11 @@ static int qpnp_hap_auto_mode_config(struct qpnp_hap *hap, int time_ms)
 	if (hap->act_type == QPNP_HAP_ERM)
 		return 0;
 
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+	if (!time_ms)
+		return 0;
+#endif
+
 	old_ares_mode = hap->ares_cfg.auto_res_mode;
 	old_play_mode = hap->play_mode;
 	pr_debug("auto_mode, time_ms: %d\n", time_ms);
@@ -2326,11 +2335,19 @@ static void qpnp_timed_enable_worker(struct work_struct *work)
 
 		time_ms = (time_ms > hap->timeout_ms ?
 				 hap->timeout_ms : time_ms);
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+		if (!time_ms) {
+			hap->state = 0;
+		} else {
+#endif
 		hap->play_time_ms = time_ms;
 		hrtimer_start(&hap->hap_timer,
 				ktime_set(time_ms / 1000,
 				(time_ms % 1000) * 1000000),
 				HRTIMER_MODE_REL);
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+		}
+#endif
 	}
 
 	mutex_unlock(&hap->lock);
