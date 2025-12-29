@@ -1132,6 +1132,15 @@ static int qusb_phy_dpdm_regulator_enable(struct regulator_dev *rdev)
 	struct qusb_phy *qphy = rdev_get_drvdata(rdev);
 
 	dev_dbg(qphy->phy.dev, "%s\n", __func__);
+
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
+	// fix DDV-715 ycable not work if at first not charge by ligang at 20190523
+	if (qphy->phy.flags & PHY_HOST_MODE) {
+		dev_err(qphy->phy.dev, "%s: host mode active\n", __func__);
+		return -EINVAL;
+	}
+#endif
+
 	return qusb_phy_update_dpdm(&qphy->phy, POWER_SUPPLY_DP_DM_DPF_DMF);
 }
 
