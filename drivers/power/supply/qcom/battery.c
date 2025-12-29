@@ -891,6 +891,10 @@ static int usb_icl_vote_callback(struct votable *votable, void *data,
 		power_supply_set_property(chip->main_psy,
 				POWER_SUPPLY_PROP_CURRENT_MAX,
 				&pval);
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+		/* wait for ICL change */
+		msleep(20);
+#endif
 	}
 
 	/* set the effective ICL */
@@ -1341,15 +1345,25 @@ int qcom_batt_init(void)
 	chip->slave_pct = 50;
 	chip->restricted_current = DEFAULT_RESTRICTED_CURRENT_UA;
 
-	chip->pl_ws = wakeup_source_register("qcom-battery");
-	if (!chip->pl_ws)
-		goto cleanup;
-
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
 	INIT_DELAYED_WORK(&chip->status_change_work, status_change_work);
 	INIT_DELAYED_WORK(&chip->pl_taper_work, pl_taper_work);
 	INIT_WORK(&chip->pl_disable_forever_work, pl_disable_forever_work);
 	INIT_DELAYED_WORK(&chip->pl_awake_work, pl_awake_work);
 	INIT_DELAYED_WORK(&chip->fcc_step_update_work, fcc_step_update_work);
+#endif
+
+	chip->pl_ws = wakeup_source_register("qcom-battery");
+	if (!chip->pl_ws)
+		goto cleanup;
+
+#if !defined(CONFIG_LONGCHEER_SDM660_PROJS)
+	INIT_DELAYED_WORK(&chip->status_change_work, status_change_work);
+	INIT_DELAYED_WORK(&chip->pl_taper_work, pl_taper_work);
+	INIT_WORK(&chip->pl_disable_forever_work, pl_disable_forever_work);
+	INIT_DELAYED_WORK(&chip->pl_awake_work, pl_awake_work);
+	INIT_DELAYED_WORK(&chip->fcc_step_update_work, fcc_step_update_work);
+#endif
 
 	chip->fcc_votable = create_votable("FCC", VOTE_MIN,
 					pl_fcc_vote_callback,

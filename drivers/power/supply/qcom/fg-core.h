@@ -438,6 +438,9 @@ struct fg_chip {
 	int			last_recharge_volt_mv;
 	int			delta_temp_irq_count;
 	int			esr_timer_charging_default[NUM_ESR_TIMERS];
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
+	int                     battery_full_design;
+#endif
 	enum slope_limit_status	slope_limit_sts;
 	enum esr_filter_status	esr_flt_sts;
 	bool			profile_available;
@@ -454,6 +457,9 @@ struct fg_chip {
 	bool			use_ima_single_mode;
 	bool			qnovo_enable;
 	bool			suspended;
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+	bool 			rsense_rw; // FIHTDC, IdaChiang, add for DRG external sense issue
+#endif
 	struct completion	soc_update;
 	struct completion	soc_ready;
 	struct delayed_work	profile_load_work;
