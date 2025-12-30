@@ -36,6 +36,18 @@ config SND_SOC_COMPRESS
 config SND_SOC_TOPOLOGY
 	bool
 
+config SPEAKER_EXT_PA
+    default n
+    bool "Speaker external PA"
+    help
+        Support for external PA.
+
+config SPEAKER_EXT_PA_AW87318
+    default n
+    bool "Speaker external PA AW87318"
+    help
+        Support for the AW87318.
+
 # All the supported SoCs
 source "sound/soc/adi/Kconfig"
 source "sound/soc/atmel/Kconfig"
