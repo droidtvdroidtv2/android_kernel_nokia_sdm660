@@ -5,7 +5,11 @@
 
 #define KVERSION 0x1
 
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+#define MAX_POWER_CONFIG      20
+#else
 #define MAX_POWER_CONFIG      12
+#endif
 #define GPIO_OUT_LOW          (0 << 1)
 #define GPIO_OUT_HIGH         (1 << 1)
 #define CSI_EMBED_DATA        0x12
@@ -45,7 +49,11 @@
 
 #define MAX_LED_TRIGGERS          3
 
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+#define MSM_EEPROM_MEMORY_MAP_MAX_SIZE  2048+1+80 /* MM-JF-implement-dual-cam-recalibration-00+ */
+#else
 #define MSM_EEPROM_MEMORY_MAP_MAX_SIZE  80
+#endif
 #define MSM_EEPROM_MAX_MEM_MAP_CNT      8
 
 #define MSM_SENSOR_BYPASS_VIDEO_NODE    1
@@ -57,6 +65,9 @@ enum msm_sensor_camera_id_t {
 	CAMERA_1,
 	CAMERA_2,
 	CAMERA_3,
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
+        CAMERA_4,
+#endif
 	MAX_CAMERAS,
 };
 
@@ -71,6 +82,9 @@ enum i2c_freq_mode_t {
 enum camb_position_t {
 	BACK_CAMERA_B,
 	FRONT_CAMERA_B,
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
+	WIDE_CAMERA_B = 0x110, //for wide camera
+#endif
 	AUX_CAMERA_B = 0x100,
 	FRONT_AUX_CAMERA_B,
 	INVALID_CAMERA_B,
@@ -82,6 +96,9 @@ enum msm_sensor_power_seq_type_t {
 	SENSOR_VREG,
 	SENSOR_I2C_MUX,
 	SENSOR_I2C,
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+	SENSOR_EXPAND,
+#endif
 };
 
 enum msm_camera_i2c_reg_addr_type {
@@ -176,6 +193,10 @@ enum msm_actuator_write_type {
 enum msm_actuator_i2c_operation {
 	MSM_ACT_WRITE = 0,
 	MSM_ACT_POLL,
+#if defined(CONFIG_FIH_SDM630_SDM660_PROJS)
+	MSM_ACT_FIH_READ_AND_TO_WRITE, ///fihtdc@20180529, peter add
+	MSM_ACT_FIH_READ_OR_TO_WRITE, ///fihtdc@20180529, peter add
+#endif
 };
 
 enum actuator_type {
@@ -256,6 +277,9 @@ enum msm_camera_i2c_operation {
 	MSM_CAM_WRITE = 0,
 	MSM_CAM_POLL,
 	MSM_CAM_READ,
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
+	MSM_CAM_READ_LOOP, /*added for gc otp*/
+#endif
 };
 
 struct msm_sensor_i2c_sync_params {
