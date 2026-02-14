@@ -1208,6 +1208,14 @@ config TOUCHSCREEN_ST
 
 	  If unsure, say N.
 
+config LC_TOUCHSCREEN_INFO
+        bool "Longcheer Touchscreen Info driver"
+        depends on I2C
+        help
+          Say Y here if you have a Longcheer Touchscreen Info.
+
+          If unsure, say N.
+
 source "drivers/input/touchscreen/st/Kconfig"
 
 source "drivers/input/touchscreen/focaltech_touch/Kconfig"
