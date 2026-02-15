@@ -26,6 +26,10 @@
 #include <linux/regulator/machine.h>
 #include <linux/qpnp/qpnp-revid.h>
 
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
+#include <linux/lct_tp_fm_info.h>
+#endif
+
 #define QPNP_LCDB_REGULATOR_DRIVER_NAME		"qcom,qpnp-lcdb-regulator"
 
 /* LCDB */
@@ -793,6 +797,13 @@ static irqreturn_t qpnp_lcdb_sc_irq_handler(int irq, void *data)
 	rc = qpnp_lcdb_read(lcdb, lcdb->base + INT_RT_STATUS_REG, &val, 1);
 	if (rc < 0)
 		goto irq_handled;
+
+#if defined(CONFIG_LONGCHEER_SDM660_PROJS)
+        if(tp_gesture_wakeup() == 1)
+             lcdb->ttw_enable = true;
+        else
+             lcdb->ttw_enable = false;
+#endif
 
 	if (val & SC_ERROR_RT_STS_BIT) {
 		rc = qpnp_lcdb_read(lcdb,
