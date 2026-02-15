@@ -69,3 +69,4 @@ obj-y				+= qcom/
 obj-$(CONFIG_QPNP_MISC) 	+= qpnp-misc.o
 obj-$(CONFIG_MEMORY_STATE_TIME) += memory_state_time.o
 obj-$(CONFIG_HAPTICS_DRV2605)	+= drv2605l.o
+obj-$(CONFIG_I2C_DEVINFO)	+= i2c_devinfo.o
