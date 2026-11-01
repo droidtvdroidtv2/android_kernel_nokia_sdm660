@@ -1675,10 +1675,14 @@ out_ret:
 }
 
 #ifdef CONFIG_KSU_MANUAL_HOOK
-__attribute__((hot))
+attribute((hot))
 extern int ksu_handle_execveat(int *fd, struct filename **filename_ptr,
-				void *argv, void *envp, int *flags);
+        void *argv, void *envp, int *flags);
+attribute((hot))
+extern int ksu_handle_post_execveat(int *fd, struct filename **filename_ptr,
+        void *argv, void *envp, int *flags, int *retval);
 #endif
+
 
 int do_execve(struct filename *filename,
 	const char __user *const __user *__argv,
@@ -1687,9 +1691,16 @@ int do_execve(struct filename *filename,
 	struct user_arg_ptr argv = { .ptr.native = __argv };
 	struct user_arg_ptr envp = { .ptr.native = __envp };
 #ifdef CONFIG_KSU_MANUAL_HOOK
-	ksu_handle_execveat((int *)AT_FDCWD, &filename, &argv, &envp, 0);
-#endif
+  int retval;
+  ksu_handle_execveat((int *)AT_FDCWD, &filename, &argv, &envp, 0);
+  retval = do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
+
+  ksu_handle_post_execveat((int *)AT_FDCWD, &filename, &argv, &envp, 0, &retval);
+  return retval;
+#else
 	return do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
+#endif
+
 }
 
 int do_execveat(int fd, struct filename *filename,
@@ -1717,9 +1728,16 @@ static int compat_do_execve(struct filename *filename,
 		.ptr.compat = __envp,
 	};
 #ifdef CONFIG_KSU_MANUAL_HOOK // 32-bit ksud and 32-on-64 support
-	ksu_handle_execveat((int *)AT_FDCWD, &filename, &argv, &envp, 0);
-#endif
+  int retval;
+  ksu_handle_execveat((int *)AT_FDCWD, &filename, &argv, &envp, 0);
+
+  retval = do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
+
+  ksu_handle_post_execveat((int *)AT_FDCWD, &filename, &argv, &envp, 0, &retval);
+  return retval;
+#else
 	return do_execveat_common(AT_FDCWD, filename, argv, envp, 0);
+#endif
 }
 
 static int compat_do_execveat(int fd, struct filename *filename,
